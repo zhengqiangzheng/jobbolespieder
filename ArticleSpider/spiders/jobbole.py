@@ -34,39 +34,38 @@ class JobboleSpider(scrapy.Spider):
     def parse_detail(self, response):
         article_item = JobBoleAricleItem()
         # 使用css提取文章具体字段
-        title = response.css('.entry-header h1::text').extract()[0]
+        # title = response.css('.entry-header h1::text').extract()[0]
         create_date = response.css('.entry-meta-hide-on-mobile::text').extract()[0].strip().split(' ')[0]
-        try:
-            create_date = datetime.datetime.strptime(create_date, "%Y/%m/%d")
-        except Exception as e:
-            create_date = datetime.datetime.now().date()
+        # try:
+        #     create_date = datetime.datetime.strptime(create_date, "%Y/%m/%d")
+        # except Exception as e:
+        #     create_date = datetime.datetime.now().date()
         # response.xpath('//span[contains(@class,"vote-post-up")]/h10/text()').extract()
         praise_nums = response.css('.vote-post-up h10 ::text').extract()[0]
         image_url = response.css("img::attr(src)").extract_first("")
-        front_img_url = response.meta.get("front_img_url", "")
-        fav_nums = response.css('.bookmark-btn::text').extract()[0]
-        pattern = '.*?(\d+).*$'
-        match_re = re.match(pattern, fav_nums)
-        if match_re:
-            fav_nums = int(match_re.group(1))
-        else:
-            fav_nums = 0
-        content = response.xpath('//div[@class="entry"]').extract_first()
-        tar_list = response.css('p.entry-meta-hide-on-mobile>a::text').extract()
-        tags = [element for element in tar_list if not element.strip().endswith('评论')]
-        article_item["title"] = title
-        article_item["url"] = response.url
-        article_item["create_date"] = create_date
-        article_item["praise_nums"] = praise_nums
-        article_item["front_img_url"] = [front_img_url]
-        article_item["content"] = content
-        article_item["tags"] = tags
-        article_item["fav_nums"] = fav_nums
-        article_item["url_object_id"] = get_md5(response.url)
+        # fav_nums = response.css('.bookmark-btn::text').extract()[0]
+        # pattern = '.*?(\d+).*$'
+        # match_re = re.match(pattern, fav_nums)
+        # if match_re:
+        #     fav_nums = int(match_re.group(1))
+        # else:
+        #     fav_nums = 0
+        # content = response.xpath('//div[@class="entry"]').extract_first()
+        # tar_list = response.css('p.entry-meta-hide-on-mobile>a::text').extract()
+        # tags = [element for element in tar_list if not element.strip().endswith('评论')]
+        # article_item["title"] = title
+        # article_item["url"] = response.url
+        # article_item["create_date"] = create_date
+        # article_item["praise_nums"] = praise_nums
+        # article_item["front_img_url"] = [front_img_url]
+        # article_item["content"] = content
+        # article_item["tags"] = tags
+        # article_item["fav_nums"] = fav_nums
+        # article_item["url_object_id"] = get_md5(response.url)
 
         # 通过itemloaader 加载item
+        front_img_url = response.meta.get("front_img_url", "")
         item_loader = ArticleItemLoader(item=JobBoleAricleItem(), response=response)
-        # item_loader = ArticleItemLoader(item=JobBoleAricleItem(), response=response)
         item_loader.add_css("title", ".entry-header h1::text")
         item_loader.add_value("url", response.url)
         item_loader.add_value("url_object_id", get_md5(response.url))
