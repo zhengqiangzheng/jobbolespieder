@@ -65,11 +65,11 @@ ROBOTSTXT_OBEY = False
 # Configure item pipelines
 # See https://doc.scrapy.org/en/latest/topics/item-pipeline.html
 ITEM_PIPELINES = {
-    # 'ArticleSpider.pipelines.JsonWithEncodingPineLine': 2,
+    'ArticleSpider.pipelines.JsonWithEncodingPineLine': 4,
     # 'scrapy.pipelines.images.ImagesPipeline': 1,
-    # 'ArticleSpider.pipelines.ArticleImagePipeline': 1,
-    # 'ArticleSpider.pipelines.JsonExporterPipeline': 3,
-    'ArticleSpider.pipelines.MysqlTwistPipline': 1
+    # 'ArticleSpider.pipelines.ArticleImagePipeline': 2,
+    # 'ArticleSpider.pipelines.JsonExporterPipeline': 5,
+    # 'ArticleSpider.pipelines.MysqlTwistPipline': 1
 
 }
 # url 在item中的字段

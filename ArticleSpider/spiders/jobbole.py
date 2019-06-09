@@ -2,10 +2,11 @@
 import scrapy
 import re
 from urllib import parse
-from ArticleSpider.items import JobBoleAricleItem
+from ArticleSpider.items import JobBoleAricleItem, ArticleItemLoader
 from scrapy.http import Request
 from ArticleSpider.utils.common import get_md5
 import datetime
+from scrapy.loader import ItemLoader
 
 
 class JobboleSpider(scrapy.Spider):
@@ -32,7 +33,7 @@ class JobboleSpider(scrapy.Spider):
 
     def parse_detail(self, response):
         article_item = JobBoleAricleItem()
-        # 提取文章具体字段
+        # 使用css提取文章具体字段
         title = response.css('.entry-header h1::text').extract()[0]
         create_date = response.css('.entry-meta-hide-on-mobile::text').extract()[0].strip().split(' ')[0]
         try:
@@ -62,6 +63,18 @@ class JobboleSpider(scrapy.Spider):
         article_item["tags"] = tags
         article_item["fav_nums"] = fav_nums
         article_item["url_object_id"] = get_md5(response.url)
-        yield article_item
 
-        pass
+        # 通过itemloaader 加载item
+        item_loader = ArticleItemLoader(item=JobBoleAricleItem(), response=response)
+        # item_loader = ArticleItemLoader(item=JobBoleAricleItem(), response=response)
+        item_loader.add_css("title", ".entry-header h1::text")
+        item_loader.add_value("url", response.url)
+        item_loader.add_value("url_object_id", get_md5(response.url))
+        item_loader.add_css("create_date", "p.entry-meta-hide-on-mobile::text")
+        item_loader.add_value("front_img_url", [front_img_url])
+        item_loader.add_css("praise_nums", ".vote-post-up h10::text")
+        item_loader.add_css("fav_nums", ".bookmark-btn::text")
+        item_loader.add_css("tags", "p.entry-meta-hide-on-mobile a::text")
+        item_loader.add_css("content", "div.entry")
+        article_item = item_loader.load_item()
+        yield article_item

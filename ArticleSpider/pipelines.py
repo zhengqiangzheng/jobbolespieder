@@ -21,9 +21,10 @@ class ArticlespiderPipeline(object):
 # 自定义pipeline获得图片名
 class ArticleImagePipeline(ImagesPipeline):
     def item_completed(self, results, item, info):
-        for ok, value in results:
-            image_file_path = value['path']
-        item['front_image_path'] = image_file_path
+        if "front_img_url" in item:
+            for ok, value in results:
+                image_file_path = value['path']
+            item['front_image_path'] = image_file_path
         return item
 
 
@@ -73,7 +74,7 @@ class MysqlPipeline(object):
         """
         self.cursor.execute(insert_sql, (
             item["title"], item["create_date"], item["url"], item["url_object_id"], item["praise_nums"],
-            item["content"], item["fav_nums"], item["front_img_url"]))
+            item["content"], item["fav_nums"], item["front_img_url"][0]))
         self.conn.commit()
 
 
